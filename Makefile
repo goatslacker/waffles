@@ -1,2 +1,5 @@
 all:
-	@gcc lexer.c -o waffle
+	@gcc src/lexer.c -o build/waffle
+
+run:
+	@build/waffle
