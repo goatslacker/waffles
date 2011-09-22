@@ -4,13 +4,13 @@
 
 #include "lexer.h"
 
-int isToken() {
+int isToken(char *string) {
   regex_t regex;
   int statusCode;
 
   regcomp(&regex, TOKEN, 0);
 
-  statusCode = regexec(&regex, "hello world", 0, NULL, 0);
+  statusCode = regexec(&regex, string, 0, NULL, 0);
 
   regfree(&regex);
 
@@ -23,10 +23,10 @@ int isToken() {
 
 int main(int argc, char *argv[]) {
 
-//  char str[15] = "hello world";
+  char *str = "hello world";
   int val;
 
-  val = isToken();
+  val = isToken(str);
   if (val == 1) {
     printf("It's a token!\n");
   } else {
