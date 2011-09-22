@@ -4,33 +4,20 @@
 
 #include "lexer.h"
 
-int isToken(char *string) {
-  regex_t regex;
-  int statusCode;
+int main(int argc, char **args) {
+  FILE *fp;
+  char character;
 
-  regcomp(&regex, TOKEN, 0);
-
-  statusCode = regexec(&regex, string, 0, NULL, 0);
-
-  regfree(&regex);
-
-  if (!statusCode) {
+  if ((fp = fopen(args[1], "r")) == NULL) {
     return 1;
-  } else {
-    return 0;
   }
-}
 
-int main(int argc, char *argv[]) {
+  character = fgetc(fp);
 
-  char *str = "hello world";
-  int val;
+  printf("%c\n", character);
 
-  val = isToken(str);
-  if (val == 1) {
-    printf("It's a token!\n");
-  } else {
-    printf(":(\n");
+  if (fclose(fp) != 0) {
+    return 1;
   }
 
   return 0;

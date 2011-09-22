@@ -1,0 +1,4 @@
+fib(n) {
+  return n if n is 1 or 2
+  fib(n - 1) + fib(n - 2)
+}
