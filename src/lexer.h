@@ -1,4 +1,8 @@
 #define TOKEN "TOKEN"
 #define IDENTIFIER "IDENTIFIER"
 
-#define RX_TOKEN "^[a-zA-Z+]"
+typedef struct {
+  FILE *file;
+  char character;
+  const char *filename;
+} lexer;

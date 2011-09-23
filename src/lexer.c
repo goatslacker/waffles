@@ -4,9 +4,18 @@
 
 #include "lexer.h"
 
-//void lexer(Lexer *this, FILE file, const char filename) {
-//  FILE *fp;
-//
+void lexer_init(lexer *this, FILE *file, const char *filename) {
+  this->file = file;
+  this->filename = filename;
+}
+
+char lexer_next(lexer *this) {
+  this->character = fgetc(this->file);
+  return this->character;
+}
+
+//char lexer_prev(lexer *this) {
+//  return ungetc(this->character, this->file);
 //}
 
 int isString(char string) {
@@ -22,16 +31,11 @@ int isString(char string) {
   return statusCode;
 }
 
-int tokenize(char args[]) {
-  FILE *fp;
+int lexer_tokenize(lexer *this) {
   char character;
 
-  if ((fp = fopen(args, "r")) == NULL) {
-    return 1;
-  }
-
   next:
-    character = fgetc(fp);
+    character = lexer_next(this);
 
     switch (character) {
     // ignore whitespace
@@ -44,9 +48,6 @@ int tokenize(char args[]) {
 
     // return on EOF
     case EOF:
-      if (fclose(fp) != 0) {
-        return 1;
-      }
       return 0;
 
     // handle token
@@ -58,5 +59,20 @@ int tokenize(char args[]) {
 }
 
 int main(int argc, char **args) {
-  return tokenize(args[1]);
+  FILE *fp;
+
+  if ((fp = fopen(args[1], "r")) == NULL) {
+    return 1;
+  }
+
+  lexer lex;
+  lexer_init(&lex, fp, args[1]);
+
+  int statusCode = lexer_tokenize(&lex);
+
+  if (fclose(fp) != 0) {
+    return 1;
+  }
+
+  return statusCode;
 }
