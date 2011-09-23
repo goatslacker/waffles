@@ -3,3 +3,8 @@ all:
 
 run:
 	@build/waffle
+
+test:
+	@build/waffle examples/fib.wfl
+
+.PHONY: test
