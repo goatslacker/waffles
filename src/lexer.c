@@ -56,6 +56,22 @@ int lexer_isIdentifier(lexer *this, char *buffer) {
   }
 }
 
+void lexer_number(lexer *this) {
+  char buffer[128];
+  char *type_of;
+  int i = 0;
+
+  do {
+    buffer[i++] = this->character;
+  } while (isdigit(lexer_next(this)));
+
+  printf("NUMBER, %s\n", buffer);
+
+  for (i = 0; i < 128; i += 1) {
+    buffer[i] = 0;
+  }
+}
+
 void lexer_identifier(lexer *this) {
   char buffer[128];
   char *type_of;
@@ -134,6 +150,8 @@ void lexer_tokenize(lexer *this) {
     default:
       if (isalpha(this->character)) {
         lexer_identifier(this);
+      } else if (isdigit(this->character)) {
+        lexer_number(this);
       } else {
         printf("%c, %c\n", this->character, this->character);
       }
