@@ -20,6 +20,18 @@ char lexer_prev(lexer *this) {
   return this->character;
 }
 
+int lexer_isComparison(lexer *this) {
+  int is_comparison;
+
+  lexer_next(this);
+
+  is_comparison = (this->character == '=');
+
+  lexer_prev(this);
+
+  return is_comparison;
+}
+
 int lexer_isIdentifier(lexer *this, char *buffer) {
   if (strcmp(buffer, "return") == 0) {
     return 0;
@@ -70,12 +82,31 @@ void lexer_string(lexer *this) {
 }
 
 void lexer_tokenize(lexer *this) {
+  int comparison;
 
   while (lexer_next(this) != EOF) {
     switch (this->character) {
     // ignore whitespace
     case ' ':
       break;
+
+    case '>':
+    case '<':
+    case '!':
+    case '=':
+      comparison = lexer_isComparison(this);
+      if (comparison == 1) {
+        printf("COMPARE, %c%c\n", this->character, lexer_next(this));
+      }
+      break;
+
+//    case '|':
+//    case '&':
+//      logic = lexer_isLogic(this);
+//      if (comparison == 1) {
+//        printf("COMPARE, %c\n", this->character);
+//      }
+//      break;
 
     case '"':
       lexer_string(this);
