@@ -129,6 +129,11 @@ void lexer_tokenize(lexer *this) {
 
   while (lexer_next(this) != EOF) {
     switch (this->character) {
+    // increment line counter
+    case '\n':
+      this->line++;
+      break;
+
     // ignore whitespace
     case ' ':
       break;
@@ -157,11 +162,6 @@ void lexer_tokenize(lexer *this) {
 
     case '"':
       lexer_string(this);
-      break;
-
-    // increment line counter
-    case '\n':
-      this->line++;
       break;
 
     // handle token
