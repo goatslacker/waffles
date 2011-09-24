@@ -1,2 +1,7 @@
 print "hello world"
 
+fib(n) {
+  return n ? fib == 0 || fib == 1
+  return fib(n - 1) + fib(n - 2)
+}
+

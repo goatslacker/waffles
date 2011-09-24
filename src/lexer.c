@@ -20,15 +20,38 @@ char lexer_prev(lexer *this) {
   return this->character;
 }
 
+int lexer_isIdentifier(lexer *this, char *buffer) {
+  if (strcmp(buffer, "return") == 0) {
+    return 0;
+  } else if (strcmp(buffer, "print") == 0) {
+    return 0;
+  } else {
+    return 1;
+  }
+}
+
 void lexer_identifier(lexer *this) {
   char buffer[128];
+  char *type_of;
   int i = 0;
 
   do {
     buffer[i++] = this->character;
   } while (isalpha(lexer_next(this)));
 
-  printf("IDENTIFIER, %s\n", buffer);
+  int is_ident = lexer_isIdentifier(this, buffer);
+
+  if (is_ident == 0) {
+    type_of = buffer;
+  } else {
+    type_of = "IDENTIFIER";
+  }
+
+  printf("%s, %s\n", type_of, buffer);
+
+  for (i = 0; i < 128; i += 1) {
+    buffer[i] = 0;
+  }
 }
 
 void lexer_string(lexer *this) {
@@ -40,6 +63,10 @@ void lexer_string(lexer *this) {
   }
 
   printf("STRING, %s\n", buffer);
+
+  for (i = 0; i < 128; i += 1) {
+    buffer[i] = 0;
+  }
 }
 
 void lexer_tokenize(lexer *this) {
@@ -63,7 +90,7 @@ void lexer_tokenize(lexer *this) {
       if (isalpha(this->character)) {
         lexer_identifier(this);
       } else {
-        printf("CHARACTER, %c\n", this->character);
+        printf("%c, %c\n", this->character, this->character);
       }
     }
   }
