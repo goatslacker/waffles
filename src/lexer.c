@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 #include <regex.h>
 
 #include "lexer.h"
@@ -14,48 +15,59 @@ char lexer_next(lexer *this) {
   return this->character;
 }
 
-//char lexer_prev(lexer *this) {
-//  return ungetc(this->character, this->file);
-//}
-
-int isString(char string) {
-  regex_t regex;
-  int statusCode;
-
-  regcomp(&regex, TOKEN, 0);
-
-  statusCode = regexec(&regex, &string, 0, NULL, 0);
-
-  regfree(&regex);
-
-  return statusCode;
+char lexer_prev(lexer *this) {
+  this->character = ungetc(this->character, this->file);
+  return this->character;
 }
 
-int lexer_tokenize(lexer *this) {
-  char character;
+void lexer_identifier(lexer *this) {
+  char buffer[128];
+  int i = 0;
 
-  next:
-    character = lexer_next(this);
+  do {
+    buffer[i++] = this->character;
+  } while (isalpha(lexer_next(this)));
 
-    switch (character) {
+  printf("IDENTIFIER, %s\n", buffer);
+}
+
+void lexer_string(lexer *this) {
+  char buffer[128];
+  int i = 0;
+
+  while ((lexer_next(this)) != '"') {
+    buffer[i++] = this->character;
+  }
+
+  printf("STRING, %s\n", buffer);
+}
+
+void lexer_tokenize(lexer *this) {
+
+  while (lexer_next(this) != EOF) {
+    switch (this->character) {
     // ignore whitespace
     case ' ':
+      break;
+
+    case '"':
+      lexer_string(this);
       break;
 
     // don't care about newlines
     case '\n':
       break;
 
-    // return on EOF
-    case EOF:
-      return 0;
-
     // handle token
     default:
-      printf("%c", character);
+      if (isalpha(this->character)) {
+        lexer_identifier(this);
+      } else {
+        printf("CHARACTER, %c\n", this->character);
+      }
     }
+  }
 
-    goto next;
 }
 
 int main(int argc, char **args) {
@@ -68,11 +80,11 @@ int main(int argc, char **args) {
   lexer lex;
   lexer_init(&lex, fp, args[1]);
 
-  int statusCode = lexer_tokenize(&lex);
+  lexer_tokenize(&lex);
 
   if (fclose(fp) != 0) {
     return 1;
   }
 
-  return statusCode;
+  return 0;
 }

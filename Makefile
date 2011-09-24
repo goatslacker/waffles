@@ -7,4 +7,7 @@ run:
 test:
 	@build/waffle examples/fib.wfl
 
+debug:
+	@valgrind build/waffle examples/fib.wfl
+
 .PHONY: test
