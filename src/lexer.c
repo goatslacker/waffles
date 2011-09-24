@@ -25,6 +25,7 @@ int lexer_isComparison(lexer *this) {
 
   lexer_next(this);
 
+  // FIXME: > and < will not be scanned properly
   is_comparison = (this->character == '=');
 
   lexer_prev(this);
@@ -47,13 +48,15 @@ int lexer_isLogic(lexer *this) {
 }
 
 int lexer_isIdentifier(lexer *this, char *buffer) {
-  if (strcmp(buffer, "return") == 0) {
-    return 0;
-  } else if (strcmp(buffer, "print") == 0) {
-    return 0;
-  } else {
-    return 1;
+  int i = 0;
+
+  for (i; sizeof(KEYWORDS); i += 1) {
+    if (strcmp(buffer, KEYWORDS[i])) {
+      return 0;
+    }
   }
+
+  return 1;
 }
 
 void lexer_number(lexer *this) {
@@ -97,6 +100,7 @@ void lexer_identifier(lexer *this) {
 }
 
 void lexer_string(lexer *this) {
+  // TODO buffer 128 :(
   char buffer[128];
   int i = 0;
 
