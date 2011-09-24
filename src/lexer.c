@@ -63,7 +63,6 @@ int lexer_isIdentifier(lexer *this, char *buffer) {
 
 void lexer_number(lexer *this) {
   char buffer[128];
-  char *type_of;
   int i = 0;
 
   do {
