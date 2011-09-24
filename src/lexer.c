@@ -3,6 +3,7 @@
 #include <ctype.h>
 #include <regex.h>
 
+#include "waffle.h"
 #include "lexer.h"
 
 void lexer_init(lexer *this, FILE *file, const char *filename) {
@@ -53,11 +54,11 @@ int lexer_isIdentifier(lexer *this, char *buffer) {
 
   for (i; sizeof(KEYWORDS); i += 1) {
     if (strcmp(buffer, KEYWORDS[i])) {
-      return 0;
+      return false;
     }
   }
 
-  return 1;
+  return true;
 }
 
 void lexer_number(lexer *this) {
@@ -87,7 +88,7 @@ void lexer_identifier(lexer *this) {
 
   int is_ident = lexer_isIdentifier(this, buffer);
 
-  if (is_ident == 0) {
+  if (is_ident == false) {
     type_of = buffer;
   } else {
     type_of = "IDENTIFIER";
@@ -137,7 +138,7 @@ void lexer_tokenize(lexer *this) {
     case '!':
     case '=':
       comparison = lexer_isComparison(this);
-      if (comparison == 1) {
+      if (comparison == true) {
         printf("COMPARE, %c%c, %d\n", this->character, lexer_next(this), this->line);
       }
       break;
@@ -145,7 +146,7 @@ void lexer_tokenize(lexer *this) {
     case '|':
     case '&':
       logic = lexer_isLogic(this);
-      if (logic == 1) {
+      if (logic == true) {
         printf("LOGIC, %c%c, %d\n", this->character, lexer_next(this), this->line);
       }
       break;
@@ -181,7 +182,7 @@ int main(int argc, char **args) {
   FILE *fp;
 
   if ((fp = fopen(args[1], "r")) == NULL) {
-    return 1;
+    return error;
   }
 
   lexer lex;
@@ -189,9 +190,9 @@ int main(int argc, char **args) {
 
   lexer_tokenize(&lex);
 
-  if (fclose(fp) != 0) {
-    return 1;
+  if (fclose(fp) != ok) {
+    return error;
   }
 
-  return 0;
+  return ok;
 }
