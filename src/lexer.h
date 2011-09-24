@@ -13,4 +13,5 @@ typedef struct {
   FILE *file;
   char character;
   const char *filename;
+  int line;
 } lexer;

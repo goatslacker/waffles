@@ -8,6 +8,7 @@
 void lexer_init(lexer *this, FILE *file, const char *filename) {
   this->file = file;
   this->filename = filename;
+  this->line = 1;
 }
 
 char lexer_next(lexer *this) {
@@ -68,7 +69,7 @@ void lexer_number(lexer *this) {
     buffer[i++] = this->character;
   } while (isdigit(lexer_next(this)));
 
-  printf("NUMBER, %s\n", buffer);
+  printf("NUMBER, %s, %d\n", buffer, this->line);
 
   for (i = 0; i < 128; i += 1) {
     buffer[i] = 0;
@@ -92,7 +93,7 @@ void lexer_identifier(lexer *this) {
     type_of = "IDENTIFIER";
   }
 
-  printf("%s, %s\n", type_of, buffer);
+  printf("%s, %s, %d\n", type_of, buffer, this->line);
 
   for (i = 0; i < 128; i += 1) {
     buffer[i] = 0;
@@ -108,11 +109,18 @@ void lexer_string(lexer *this) {
     buffer[i++] = this->character;
   }
 
-  printf("STRING, %s\n", buffer);
+  printf("STRING, %s, %d\n", buffer, this->line);
 
   for (i = 0; i < 128; i += 1) {
     buffer[i] = 0;
   }
+}
+
+void lexer_ignore_comments(lexer *this) {
+  next:
+    if (lexer_next(this) != '\n') goto next;
+
+  this->line++;
 }
 
 void lexer_tokenize(lexer *this) {
@@ -130,7 +138,7 @@ void lexer_tokenize(lexer *this) {
     case '=':
       comparison = lexer_isComparison(this);
       if (comparison == 1) {
-        printf("COMPARE, %c%c\n", this->character, lexer_next(this));
+        printf("COMPARE, %c%c, %d\n", this->character, lexer_next(this), this->line);
       }
       break;
 
@@ -138,16 +146,21 @@ void lexer_tokenize(lexer *this) {
     case '&':
       logic = lexer_isLogic(this);
       if (logic == 1) {
-        printf("LOGIC, %c%c\n", this->character, lexer_next(this));
+        printf("LOGIC, %c%c, %d\n", this->character, lexer_next(this), this->line);
       }
+      break;
+
+    case '#':
+      lexer_ignore_comments(this);
       break;
 
     case '"':
       lexer_string(this);
       break;
 
-    // don't care about newlines
+    // increment line counter
     case '\n':
+      this->line++;
       break;
 
     // handle token
@@ -157,7 +170,7 @@ void lexer_tokenize(lexer *this) {
       } else if (isdigit(this->character)) {
         lexer_number(this);
       } else {
-        printf("%c, %c\n", this->character, this->character);
+        printf("%c, %c, %d\n", this->character, this->character, this->line);
       }
     }
   }
