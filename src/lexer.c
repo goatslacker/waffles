@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-#include <regex.h>
+#include <stdlib.h>
 
 #include "waffle.h"
 #include "lexer.h"
@@ -101,19 +101,21 @@ void lexer_identifier(lexer *this) {
 }
 
 void lexer_string(lexer *this) {
-  // TODO buffer 128 :(
-  char buffer[128];
+  char *buffer;
+  int size;
+
   int i = 0;
 
   while ((lexer_next(this)) != '"') {
+    size = sizeof(buffer) + sizeof(this->character);
+    buffer = realloc(buffer, size);
+
     buffer[i++] = this->character;
   }
 
   printf("STRING, %s, %d\n", buffer, this->line);
 
-  for (i = 0; i < 128; i += 1) {
-    buffer[i] = 0;
-  }
+  buffer = NULL;
 }
 
 void lexer_ignore_comments(lexer *this) {
@@ -155,7 +157,7 @@ void lexer_tokenize(lexer *this) {
       }
       break;
 
-    case '#':
+    case '%':
       lexer_ignore_comments(this);
       break;
 
