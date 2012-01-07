@@ -106,20 +106,18 @@ void lexer_identifier(lexer *this) {
 
 void lexer_string(lexer *this) {
   char *buffer;
-  int size;
-
-  int i = 0;
+  int size = 0;
 
   while ((lexer_next(this)) != '"') {
-    size = sizeof(buffer) + sizeof(this->character);
+    size += 1;
     buffer = realloc(buffer, size);
 
-    buffer[i++] = this->character;
+    buffer[size - 1] = this->character;
   }
 
   printf("STRING, %s, %d\n", buffer, this->line);
 
-  buffer = NULL;
+  free(buffer);
 }
 
 void lexer_ignore_comments(lexer *this) {
