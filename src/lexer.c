@@ -69,6 +69,8 @@ void lexer_number(lexer *this) {
     buffer[i++] = this->character;
   } while (isdigit(lexer_next(this)));
 
+  lexer_prev(this);
+
   printf("NUMBER, %s, %d\n", buffer, this->line);
 
   for (i = 0; i < 128; i += 1) {
@@ -84,6 +86,8 @@ void lexer_identifier(lexer *this) {
   do {
     buffer[i++] = this->character;
   } while (isalpha(lexer_next(this)));
+
+  lexer_prev(this);
 
   int is_ident = lexer_isIdentifier(this, buffer);
 
