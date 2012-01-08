@@ -22,6 +22,35 @@ char lexer_prev(lexer *this) {
   return this->character;
 }
 
+// Stringy stuff.
+void string_new(String *string) {
+  string->string = malloc(0);
+  string->size = 0;
+}
+
+void string_add(char chr, String *string) {
+  string->size += 1;
+  string->string = realloc(string->string, string->size);
+
+  string->string[string->size - 1] = chr;
+}
+
+char *string_get(String *string) {
+  return string->string;
+}
+
+void string_clear(String *string) {
+  int i = 0;
+
+  free(string->string);
+
+  for (i; i < string->size; i += 1) {
+    string->string[i] = 0;
+  }
+
+  string->string = NULL;
+}
+
 int lexer_isComparison(lexer *this) {
   int is_comparison;
 
@@ -62,75 +91,56 @@ int lexer_isIdentifier(lexer *this, char *buffer) {
 }
 
 void lexer_number(lexer *this) {
-  char buffer[128];
-  int i = 0;
+  String str;
+  string_new(&str);
 
   do {
-    buffer[i++] = this->character;
+    string_add(this->character, &str);
   } while (isdigit(lexer_next(this)));
 
   lexer_prev(this);
 
-  printf("NUMBER, %s, %d\n", buffer, this->line);
+  printf("NUMBER, %s, %d\n", string_get(&str), this->line);
 
-  for (i = 0; i < 128; i += 1) {
-    buffer[i] = 0;
-  }
+  string_clear(&str);
 }
 
 void lexer_identifier(lexer *this) {
-  char *buffer;
   char *type_of;
-  int size = 0;
-  int i = 0;
 
-  buffer = malloc(0);
+  String str;
+  string_new(&str);
 
   do {
-    size += 1;
-    buffer = realloc(buffer, size);
-    buffer[size - 1] = this->character;
+    string_add(this->character, &str);
   } while (isalpha(lexer_next(this)));
 
   lexer_prev(this);
 
-  int is_ident = lexer_isIdentifier(this, buffer);
+  int is_ident = lexer_isIdentifier(this, string_get(&str));
 
   if (is_ident == false) {
-    type_of = buffer;
+    type_of = string_get(&str);
   } else {
     type_of = "IDENTIFIER";
   }
 
-  printf("%s, %s, %d\n", type_of, buffer, this->line);
+  printf("%s, %s, %d\n", type_of, string_get(&str), this->line);
 
-  free(buffer);
-  for (i; i < size; i += 1) {
-    buffer[i] = 0;
-  }
-  buffer = NULL;
+  string_clear(&str);
 }
 
 void lexer_string(lexer *this) {
-  char *buffer;
-  int size = 0;
-  int i = 0;
-
-  buffer = malloc(0);
+  String str;
+  string_new(&str);
 
   while ((lexer_next(this)) != '"') {
-    size += 1;
-    buffer = realloc(buffer, size);
-    buffer[size - 1] = this->character;
+    string_add(this->character, &str);
   }
 
-  printf("STRING, %s, %d\n", buffer, this->line);
+  printf("STRING, %s, %d\n", string_get(&str), this->line);
 
-  free(buffer);
-  for (i; i < size; i += 1) {
-    buffer[i] = 0;
-  }
-  buffer = NULL;
+  string_clear(&str);
 }
 
 void lexer_ignore_comments(lexer *this) {

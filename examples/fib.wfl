@@ -1,14 +1,4 @@
-print "hello world"
+print "1234567890123456789012345"
 
-fib(n) {
-  if (fib == 0 || fib == 1) {
-    return n
-  } else {
-    return fib(n - 1) + fib(n - 2)
-  }
-}
-
-# this is a comment
-
-print "done."
-
+1 > 2
+3 >= 5

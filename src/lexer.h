@@ -15,3 +15,8 @@ typedef struct {
   const char *filename;
   int line;
 } lexer;
+
+typedef struct {
+  char *string;
+  int size;
+} String;
