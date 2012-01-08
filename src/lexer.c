@@ -79,12 +79,17 @@ void lexer_number(lexer *this) {
 }
 
 void lexer_identifier(lexer *this) {
-  char buffer[128];
+  char *buffer;
   char *type_of;
+  int size = 0;
   int i = 0;
 
+  buffer = malloc(0);
+
   do {
-    buffer[i++] = this->character;
+    size += 1;
+    buffer = realloc(buffer, size);
+    buffer[size - 1] = this->character;
   } while (isalpha(lexer_next(this)));
 
   lexer_prev(this);
@@ -99,25 +104,33 @@ void lexer_identifier(lexer *this) {
 
   printf("%s, %s, %d\n", type_of, buffer, this->line);
 
-  for (i = 0; i < 128; i += 1) {
+  free(buffer);
+  for (i; i < size; i += 1) {
     buffer[i] = 0;
   }
+  buffer = NULL;
 }
 
 void lexer_string(lexer *this) {
   char *buffer;
   int size = 0;
+  int i = 0;
+
+  buffer = malloc(0);
 
   while ((lexer_next(this)) != '"') {
     size += 1;
     buffer = realloc(buffer, size);
-
     buffer[size - 1] = this->character;
   }
 
   printf("STRING, %s, %d\n", buffer, this->line);
 
   free(buffer);
+  for (i; i < size; i += 1) {
+    buffer[i] = 0;
+  }
+  buffer = NULL;
 }
 
 void lexer_ignore_comments(lexer *this) {
